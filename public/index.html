@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI LinkedIn Profile Analyzer | Get Instant Feedback & Roasts</title>
+    <meta name="description" content="Stop getting ignored by recruiters. Our AI-powered LinkedIn profile analyzer gives you brutally honest roasts and actionable feedback to optimize your profile and land your dream job.">
+    <meta name="keywords" content="linkedin profile analyzer, ai linkedin review, linkedin profile optimization, improve linkedin profile, linkedin roast, career advice, job search">
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #0f172a; /* Slate 900 */
+            background-image: radial-gradient(circle at 1px 1px, #334155 1px, transparent 0);
+            background-size: 20px 20px;
+            scroll-behavior: smooth;
+        }
+        .pro-card-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1rem;
+        }
+        .tab-active {
+            background-color: #0a66c2; /* LinkedIn Blue */
+            color: white;
+        }
+        .tab-inactive {
+            background-color: #334155; /* Slate 700 */
+            color: #cbd5e1; /* Slate 300 */
+        }
+        .card-base {
+            background: linear-gradient(135deg, #1e293b, #0f172a);
+            border: 1px solid #334155;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .card-base:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+        }
+        .glow-effect {
+            box-shadow: 0 0 20px rgba(10, 102, 194, 0.5), 0 0 30px rgba(59, 130, 246, 0.3);
+        }
+        .btn-brand {
+            background-color: #0a66c2;
+            border-color: #0a66c2;
+        }
+        .btn-brand:hover {
+            background-color: #004182;
+        }
+        .social-icon:hover {
+            transform: scale(1.1);
+        }
+        details > summary {
+            cursor: pointer;
+        }
+        details[open] > summary {
+            margin-bottom: 0.5rem;
+        }
+    </style>
+</head>
+<body class="text-slate-200">
+
+    <div class="container mx-auto px-4">
+        <!-- Header & Hero Section -->
+        <header class="text-center max-w-4xl mx-auto py-16 md:py-24">
+            <h1 class="text-4xl sm:text-5xl md:text-6xl font-extrabold text-white tracking-tight">
+                Your LinkedIn Profile is Boring. <br class="hidden sm:block"> Let Our AI Make It a <span class="text-sky-400">Recruiter Magnet.</span>
+            </h1>
+            <p class="mt-6 text-lg md:text-xl text-slate-400 max-w-2xl mx-auto">
+                Get instant, brutally honest AI feedback to fix your profile, impress recruiters, and land your next job. Free, secure, and insightful.
+            </p>
+        </header>
+
+        <!-- Main Application -->
+        <main id="roaster" class="w-full max-w-3xl mx-auto bg-slate-800/50 backdrop-blur-sm border border-slate-700 rounded-2xl shadow-2xl p-6 md:p-8 glow-effect">
+            <!-- This section is dynamically controlled by JavaScript -->
+            <div id="login-container" class="text-center">
+                 <p class="text-slate-400 mb-4">Securely analyze your profile to get your score.</p>
+                <button id="login-btn" class="flex w-full sm:w-auto mx-auto justify-center items-center gap-3 btn-brand text-white font-bold py-4 px-8 rounded-lg focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-slate-900 focus:ring-sky-500 transition-all duration-200 text-lg">
+                    <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M20.5 2h-17A1.5 1.5 0 002 3.5v17A1.5 1.5 0 003.5 22h17a1.5 1.5 0 001.5-1.5v-17A1.5 1.5 0 0020.5 2zM8 19H5v-9h3zM6.5 8.25A1.75 1.75 0 118.25 6.5 1.75 1.75 0 016.5 8.25zM19 19h-3v-4.74c0-1.42-.6-1.93-1.38-1.93-.82 0-1.12.56-1.12 1.93V19h-3v-9h2.9v1.3a3.11 3.11 0 012.7-1.4c1.55 0 3.38.93 3.38 4.22V19z"/></svg>
+                    <span>Login with LinkedIn to Get Roasted</span>
+                </button>
+            </div>
+             <div id="error-message" class="hidden mt-4 p-3 text-sm bg-red-900/50 text-red-300 border border-red-800 rounded-lg"></div>
+
+            <div id="loading-container" class="hidden text-center">
+                <svg id="spinner" class="animate-spin mx-auto h-10 w-10 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
+                <p id="loading-text" class="mt-4 text-slate-300 font-semibold">Contacting LinkedIn...</p>
+            </div>
+
+            <div id="results-section" class="hidden mt-8">
+                <!-- Visual Profile Header -->
+                <div id="profile-header" class="relative rounded-xl p-6 overflow-hidden border border-slate-700 bg-slate-900 bg-cover bg-center mb-6">
+                    <div class="absolute inset-0 bg-black/60 backdrop-blur-sm"></div>
+                    <div class="relative flex flex-col sm:flex-row items-center gap-6 text-center sm:text-left">
+                        <img id="profile-pic" src="" alt="LinkedIn Profile Picture" class="w-28 h-28 rounded-full border-4 border-slate-600 shadow-lg">
+                        <div>
+                            <h2 class="text-slate-400 text-sm font-medium uppercase tracking-wider">Cringe Score</h2>
+                            <p id="roast-score" class="text-7xl font-extrabold text-white mt-1">--</p>
+                            <p id="profile-headline" class="mt-2 text-slate-300 font-medium"></p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flex justify-center bg-slate-900 p-1 rounded-lg mb-6"><button id="tab-roast" class="w-1/2 py-2 px-4 rounded-md font-semibold transition tab-active">🤣 Roast Mode</button><button id="tab-pro" class="w-1/2 py-2 px-4 rounded-md font-semibold transition tab-inactive">🧐 Pro Mode</button></div>
+                <div id="roast-content">
+                    <div id="roast-card" class="card-base rounded-lg p-6">
+                        <p id="roast-text" class="text-xl italic text-slate-300">"</p>
+                        <div class="mt-6 flex justify-between items-center flex-wrap gap-4">
+                            <a href="https://aarry.org/ProfileRoaster" target="_blank" rel="noopener noreferrer" class="text-sky-400 font-bold hover:underline">aarry.org/ProfileRoaster</a>
+                            <div class="flex items-center gap-2">
+                                <span class="text-sm text-slate-400">Share:</span>
+                                <button onclick="shareRoast('twitter')" class="social-icon text-slate-400 hover:text-white transition-transform duration-200" aria-label="Share on Twitter"><svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg></button>
+                                <button onclick="shareRoast('linkedin')" class="social-icon text-slate-400 hover:text-white transition-transform duration-200" aria-label="Share on LinkedIn"><svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M20.5 2h-17A1.5 1.5 0 002 3.5v17A1.5 1.5 0 003.5 22h17a1.5 1.5 0 001.5-1.5v-17A1.5 1.5 0 0020.5 2zM8 19H5v-9h3zM6.5 8.25A1.75 1.75 0 118.25 6.5 1.75 1.75 0 016.5 8.25zM19 19h-3v-4.74c0-1.42-.6-1.93-1.38-1.93-.82 0-1.12.56-1.12 1.93V19h-3v-9h2.9v1.3a3.11 3.11 0 012.7-1.4c1.55 0 3.38.93 3.38 4.22V19z"/></svg></button>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="about-analysis" class="mt-6">
+                        <h3 class="text-lg font-bold text-white mb-2">AI Analysis of your "About" Section</h3>
+                        <div class="space-y-2"></div>
+                    </div>
+                </div>
+                <div id="pro-content" class="hidden">
+                    <div class="pro-card-grid">
+                        <div class="bg-slate-900/70 p-4 rounded-lg border border-slate-700"><h3 class="font-bold text-white mb-2">👤 Headline & Photo</h3><ul id="pro-headline-list" class="list-disc list-inside text-sm text-slate-300 space-y-1"></ul></div>
+                        <div class="bg-slate-900/70 p-4 rounded-lg border border-slate-700"><h3 class="font-bold text-white mb-2">📝 About Section</h3><ul id="pro-about" class="list-disc list-inside text-sm text-slate-300 space-y-1"></ul></div>
+                        <div class="bg-slate-900/70 p-4 rounded-lg border border-slate-700"><h3 class="font-bold text-white mb-2">💼 Experience</h3><ul id="pro-experience" class="list-disc list-inside text-sm text-slate-300 space-y-1"></ul></div>
+                        <div class="bg-slate-900/70 p-4 rounded-lg border border-slate-700"><h3 class="font-bold text-white mb-2">📈 Activity</h3><ul id="pro-activity" class="list-disc list-inside text-sm text-slate-300 space-y-1"></ul></div>
+                    </div>
+                     <div class="mt-6 text-center bg-sky-900/50 border border-sky-700 p-4 rounded-lg"><p class="font-semibold">Want to turn your profile from a joke into a job offer?</p><button class="mt-2 bg-white text-sky-700 font-bold py-2 px-4 rounded-lg hover:bg-slate-200 transition">Unlock Full Profile Audit</button></div>
+                </div>
+            </div>
+        </main>
+
+        <!-- Why This App Section -->
+        <section class="text-center max-w-5xl mx-auto py-20 md:py-32">
+             <h2 class="text-3xl md:text-4xl font-extrabold text-white">Why You're Getting Ghosted by Recruiters</h2>
+             <p class="mt-4 text-lg text-slate-400">Your profile is your digital handshake. Our AI finds the smudges.</p>
+             <div class="mt-12 grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div class="card-base p-6 rounded-xl text-center">
+                    <div class="flex items-center justify-center h-12 w-12 rounded-lg bg-slate-800 text-sky-400 mx-auto">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" /></svg>
+                    </div>
+                    <h3 class="mt-4 text-xl font-bold text-white">Uncover Hidden Mistakes</h3>
+                    <p class="mt-2 text-slate-400">You can't see the buzzwords and clichés you've been staring at for months. Our AI spots them in seconds.</p>
+                </div>
+                <div class="card-base p-6 rounded-xl text-center">
+                    <div class="flex items-center justify-center h-12 w-12 rounded-lg bg-slate-800 text-sky-400 mx-auto">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>
+                    </div>
+                    <h3 class="mt-4 text-xl font-bold text-white">Get Actionable Insights</h3>
+                    <p class="mt-2 text-slate-400">We don't just make fun of you. Behind every roast is real, data-driven advice to improve your profile's impact.</p>
+                </div>
+                <div class="card-base p-6 rounded-xl text-center">
+                     <div class="flex items-center justify-center h-12 w-12 rounded-lg bg-slate-800 text-sky-400 mx-auto">
+                       <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                    </div>
+                    <h3 class="mt-4 text-xl font-bold text-white">Stand Out From the Crowd</h3>
+                    <p class="mt-2 text-slate-400">Move beyond generic templates. Craft a compelling headline and summary that tells your unique professional story.</p>
+                </div>
+             </div>
+        </section>
+        
+        <!-- Social Proof Section -->
+        <section class="max-w-5xl mx-auto py-20 md:py-32 border-t border-slate-800">
+             <h2 class="text-3xl md:text-4xl font-extrabold text-white text-center">From Cringe to Career: Real Roasts, Real Results</h2>
+             <p class="mt-4 text-lg text-slate-400 text-center">We're tough because we care. See what others have discovered.</p>
+             <div class="mt-12 grid grid-cols-1 lg:grid-cols-3 gap-8">
+                <!-- Testimonials Column -->
+                <div class="lg-col-span-1 space-y-8">
+                    <div class="card-base rounded-lg p-6"><p class="text-slate-300 italic">"The AI said my 'About' section was longer than a CVS receipt and said nothing. I shortened it, got straight to the point, and my profile views doubled. Thanks, I guess?"</p><p class="mt-4 font-bold text-white">- Jane A., Recovering Novelist</p></div>
+                    <div class="card-base rounded-lg p-6"><p class="text-slate-300 italic">"I was called out for having 15 skills and 0 endorsements. It was a digital ghost town. I cleaned it up and finally started getting messages from recruiters."</p><p class="mt-4 font-bold text-white">- Mark T., No Longer a Ghost</p></div>
+                </div>
+                <!-- Hall of Shame Column -->
+                <div class="lg-col-span-2 space-y-8">
+                    <div class="card-base rounded-lg p-6"><p class="text-lg italic text-slate-300 flex-grow">"Your profile picture looks like a cropped photo from a wedding you attended in 2012. Time to get a headshot that doesn't include a bridesmaid's shoulder."</p><p class="mt-4 text-sm text-slate-500 font-semibold">- Common Mistake: The "Mysterious Stranger" Photo</p></div>
+                    <div class="card-base rounded-lg p-6"><p class="text-lg italic text-slate-300 flex-grow">"Your headline is just 'Student at University of Vague Studies'. Are you studying witness protection? Give recruiters *something* to work with."</p><p class="mt-4 text-sm text-slate-500 font-semibold">- Common Mistake: The "Future CEO (Unemployed)" Headline</p></div>
+                </div>
+             </div>
+        </section>
+
+        <!-- Footer -->
+        <footer class="text-center border-t border-slate-800 py-16">
+            <h3 class="text-3xl font-extrabold text-white">Ready to Face the Music?</h3>
+            <p class="mt-4 text-lg text-slate-400">It's free, secure, and the best career decision you'll make all day.</p>
+            <div class="mt-8">
+                <a href="#roaster" class="btn-brand text-white font-bold py-4 px-8 rounded-lg transition text-lg">Analyze My Profile Now</a>
+            </div>
+            <div class="mt-12 text-sm text-slate-500">
+                <p>&copy; 2025 AI Profile Roast. All rights reserved.</p>
+                <p class="mt-2">Built with tough love to help you get hired.</p>
+            </div>
+        </footer>
+    </div>
+
+    <script>
+        // --- CONFIGURATION ---
+        const LINKEDIN_CLIENT_ID = "86747fqj8vfxks";
+        // IMPORTANT: The REDIRECT_URI in the backend must match this.
+        const REDIRECT_URI = window.location.origin + window.location.pathname;
+
+        // --- DOM ELEMENTS ---
+        const loginContainer = document.getElementById('login-container');
+        const loginBtn = document.getElementById('login-btn');
+        const loadingContainer = document.getElementById('loading-container');
+        const loadingText = document.getElementById('loading-text');
+        const errorMessage = document.getElementById('error-message');
+        const resultsSection = document.getElementById('results-section');
+        const profileHeader = document.getElementById('profile-header');
+        const profilePic = document.getElementById('profile-pic');
+        const roastScoreEl = document.getElementById('roast-score');
+        const profileHeadline = document.getElementById('profile-headline');
+        const tabRoast = document.getElementById('tab-roast');
+        const tabPro = document.getElementById('tab-pro');
+        const roastContent = document.getElementById('roast-content');
+        const proContent = document.getElementById('pro-content');
+        const roastTextEl = document.getElementById('roast-text');
+        const aboutAnalysisContainer = document.querySelector('#about-analysis .space-y-2');
+        const proHeadlineListEl = document.getElementById('pro-headline-list');
+        const proAboutEl = document.getElementById('pro-about');
+        const proExperienceEl = document.getElementById('pro-experience');
+        const proActivityEl = document.getElementById('pro-activity');
+
+        // --- MOCK DATA (for the AI roast part) ---
+        const mockRoasts = [ 
+            "Your profile has the default blue banner. It's the professional equivalent of leaving the plastic film on a new TV. It's time to commit.",
+            "Your profile picture looks like a cropped photo from a wedding you attended in 2012. Time for a headshot that doesn't include a bridesmaid's shoulder.",
+            "Your headline is 'Seeking new opportunities'. So is everyone else. That's like a restaurant sign that just says 'Food'.",
+            "Your 'About' section is a single, massive block of text. It's less of a summary and more of a hostage note for the reader's attention.",
+            "Your last post was ages ago. Your profile is a digital ghost town. Tumbleweeds are rolling through your activity feed.",
+            "Listing 'Microsoft Word' as a skill is like bragging you know how to use a fork. Congrats on mastering 1995's top tech."
+        ];
+        const mockAnalysis = { 
+            issues: [ 
+                { title: "Buzzword Overload Detected", comment: "You used words like 'synergy', 'passionate', and 'driven'. These are clichés that recruiters skim over. Try replacing them with concrete examples of your achievements." },
+                { title: "Readability Score: Low", comment: "Your 'About' section is one long paragraph. Break it up into 2-3 smaller paragraphs or use bullet points to make it easier for people to scan quickly." },
+                { title: "Missing a Call to Action", comment: "You've described what you do, but you haven't told the reader what to do next. End with a clear call to action, like 'Feel free to connect or reach out to me at...'" }
+            ] 
+        };
+        const mockProData = { 
+            headline: ["Your photo should be a clear, professional headshot.", "Your headline is weak. Add keywords for your target role and a key achievement."],
+            about: ["The 'About' summary is too generic. Use a storytelling approach and add accomplishments.", "Break up long paragraphs into smaller, scannable chunks or bullet points."],
+            experience: ["Quantify your bullet points. Instead of 'Managed projects,' try 'Managed 5 projects with a budget of $200k...'", "Use action verbs to start each bullet point (e.g., 'Led', 'Developed', 'Increased')."],
+            activity: ["Engage at least once a week, even if it's just commenting on an interesting post.", "Share valuable content related to your industry to establish yourself as a thought leader."]
+        };
+
+
+        // --- PKCE HELPER FUNCTIONS ---
+        function generateRandomString(length) {
+            const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-._~';
+            let result = '';
+            for (let i = 0; i < length; i++) {
+                result += characters.charAt(Math.floor(Math.random() * characters.length));
+            }
+            return result;
+        }
+
+        async function sha256(plain) {
+            const encoder = new TextEncoder();
+            const data = encoder.encode(plain);
+            return window.crypto.subtle.digest('SHA-256', data);
+        }
+
+        function base64urlencode(a) {
+            return btoa(String.fromCharCode.apply(null, new Uint8Array(a)))
+                .replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+        }
+
+        async function generateCodeChallenge(verifier) {
+            const hashed = await sha256(verifier);
+            return base64urlencode(hashed);
+        }
+
+
+        // --- UI HELPER FUNCTIONS ---
+        function setLoading(isLoading, text = 'Loading...') {
+            loginContainer.classList.toggle('hidden', isLoading);
+            loadingContainer.classList.toggle('hidden', !isLoading);
+            loadingText.textContent = text;
+        }
+
+        function displayError(message) {
+            errorMessage.textContent = message;
+            errorMessage.classList.remove('hidden');
+            setLoading(false); // Hide loader on error
+        }
+
+        function clearState() {
+            errorMessage.classList.add('hidden');
+            resultsSection.classList.add('hidden');
+        }
+        
+        function shareRoast(platform) {
+            const score = roastScoreEl.textContent;
+            const roast = roastTextEl.textContent;
+            const appUrl = "https://aarry.org/ProfileRoaster";
+            const text = `My LinkedIn profile got a Cringe Score of ${score}! 🔥 The AI said: ${roast} Get your own hilarious roast at ${appUrl} #LinkedInRoast`;
+            let shareUrl = '';
+            switch(platform) {
+                case 'twitter': shareUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}`; break;
+                case 'linkedin': shareUrl = `https://www.linkedin.com/feed/?shareActive=true&text=${encodeURIComponent(text)}`; break;
+            }
+            if (shareUrl) window.open(shareUrl, '_blank', 'noopener,noreferrer');
+        }
+        
+        tabRoast.addEventListener('click', () => {
+            roastContent.classList.remove('hidden'); proContent.classList.add('hidden');
+            tabRoast.classList.replace('tab-inactive', 'tab-active'); tabPro.classList.replace('tab-active', 'tab-inactive');
+        });
+        tabPro.addEventListener('click', () => {
+            proContent.classList.remove('hidden'); roastContent.classList.add('hidden');
+            tabPro.classList.replace('tab-inactive', 'tab-active'); tabRoast.classList.replace('tab-active', 'tab-inactive');
+        });
+
+
+        // --- CORE AUTHENTICATION LOGIC ---
+
+        // 1. LOGIN BUTTON CLICK
+        loginBtn.addEventListener('click', async () => {
+            clearState();
+            setLoading(true, "Redirecting to LinkedIn...");
+            const codeVerifier = generateRandomString(128);
+            sessionStorage.setItem('linkedin_code_verifier', codeVerifier);
+            const codeChallenge = await generateCodeChallenge(codeVerifier);
+            const scope = 'openid profile email';
+            const authUrl = `https://www.linkedin.com/oauth/v2/authorization?response_type=code&client_id=${LINKEDIN_CLIENT_ID}&redirect_uri=${encodeURIComponent(REDIRECT_URI)}&scope=${encodeURIComponent(scope)}&code_challenge=${codeChallenge}&code_challenge_method=S256`;
+            window.location.href = authUrl;
+        });
+
+
+        // 2. PAGE LOAD: CHECK FOR REDIRECT FROM LINKEDIN
+        window.addEventListener('load', async () => {
+            const queryParams = new URLSearchParams(window.location.search);
+            const authCode = queryParams.get('code');
+
+            if (authCode) {
+                loginContainer.classList.add('hidden');
+                setLoading(true, 'Authenticating...');
+                
+                const codeVerifier = sessionStorage.getItem('linkedin_code_verifier');
+
+                try {
+                    // This fetch call now goes to our serverless backend function
+                    const response = await fetch('/api/auth', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            code: authCode,
+                            codeVerifier: codeVerifier,
+                            redirectUri: REDIRECT_URI
+                        })
+                    });
+
+                    if (!response.ok) {
+                        const errorData = await response.json();
+                        throw new Error(errorData.error || 'Authentication failed on server.');
+                    }
+                    
+                    const profileData = await response.json();
+                    
+                    displayRoastResults(profileData);
+
+                } catch (error) {
+                    console.error('Authentication Error:', error);
+                    displayError(`Authentication failed: ${error.message}. Please try again.`);
+                } finally {
+                    setLoading(false);
+                    sessionStorage.removeItem('linkedin_code_verifier');
+                    window.history.replaceState({}, document.title, window.location.pathname);
+                }
+            }
+        });
+
+        // 3. DISPLAY RESULTS
+        function displayRoastResults(data) {
+            try {
+                const roastScore = Math.floor(Math.random() * 60) + 30;
+                const roastText = mockRoasts[Math.floor(Math.random() * mockRoasts.length)];
+                
+                // NOW USING REAL DATA!
+                profilePic.src = data.picture || `https://placehold.co/150x150/1e293b/94a3b8?text=:)`;
+                profileHeader.style.backgroundImage = `url('https://placehold.co/800x200/1e293b/334155?text=Your+Banner')`; // Banner still a placeholder
+                profileHeadline.textContent = data.name || "Could not fetch name";
+                roastScoreEl.textContent = roastScore;
+                roastTextEl.textContent = `"${roastText}"`;
+                
+                aboutAnalysisContainer.innerHTML = '';
+                mockAnalysis.issues.forEach(issue => {
+                    const details = document.createElement('details');
+                    details.className = 'card-base p-3 rounded-lg';
+                    details.innerHTML = `<summary class="font-semibold text-white">${issue.title}</summary><p class="text-sm text-slate-400 mt-2">${issue.comment}</p>`;
+                    aboutAnalysisContainer.appendChild(details);
+                });
+
+                proHeadlineListEl.innerHTML = mockProData.headline.map(item => `<li>${item}</li>`).join('');
+                proAboutEl.innerHTML = mockProData.about.map(item => `<li>${item}</li>`).join('');
+                proExperienceEl.innerHTML = mockProData.experience.map(item => `<li>${item}</li>`).join('');
+                proActivityEl.innerHTML = mockProData.activity.map(item => `<li>${item}</li>`).join('');
+
+                resultsSection.classList.remove('hidden');
+                resultsSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            } catch (error) {
+                displayError("Something went wrong while displaying the roast.");
+                console.error("Display failed:", error);
+            }
+        }
+    </script>
+</body>
+</html>
